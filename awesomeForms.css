@@ -1,0 +1,103 @@
+/* CSS Document */
+
+#thumbNails {
+	width:570px;
+	padding-top:17px;
+	padding-left:20px;
+	padding-bottom:0px;
+	margin-left:auto;
+	margin-right:auto;
+	background-color:#899FB4;
+	border:5px double #899fb4;
+	border-radius:10px;
+	-moz-border-radius:25px;
+	-moz-box-shadow:inset -5px -5px 5px 5px #888;
+	-webkit-box-shadow:inset -5px -5px 5px 5px#888;
+	box-shadow:inset -2px -2px 4px 4px #566471;
+}
+
+html>body #thumbNails {
+	width:610px;
+	padding-top:17px;
+	padding-left:20px;
+	padding-bottom:20px;
+	margin-left:auto;
+	margin-right:auto;
+	background-color:#899FB4;
+	border:5px double #899fb4;
+	border-radius:10px;
+	-moz-border-radius:25px;
+	-moz-box-shadow:inset -5px -5px 5px 5px #888;
+	-webkit-box-shadow:inset -5px -5px 5px 5px#888;
+	box-shadow:inset -2px -2px 4px 4px #566471;
+}
+
+.clearDiv {
+	clear:both;
+}
+
+#awesomeForm fieldset { 
+	border:2px solid black; 
+	padding:15px;
+	background-color:white; 
+	box-shadow:10px 10px 5px #888888;
+	width: 400px;
+	margin-left: auto;
+	margin-right: auto;
+	margin-top:30px;
+	-moz-box-shadow:10px 10px 5px #888888;
+	-webkit-box-shadow:10px 10px 5px #888888;
+	-ms-filter: progid:DXImageTransform.Microsoft.Shadow(color='#000000', Direction=135, Strength=4);
+}
+
+.pageThumbnail { 
+	box-shadow:2px 2px 3px #000;
+	padding:0px;
+	margin-right:5px;
+	-moz-box-shadow:2px 2px 3px #000;
+	-webkit-box-shadow:2px 2px 3px #000;
+	filter: progid:DXImageTransform.Microsoft.Shadow(color='#000000', Direction=135, Strength=3);
+}
+
+html>body .pageThumbnail { 
+	box-shadow:2px 2px 3px #000;
+	padding:0px;
+	margin-right:15px;
+	-moz-box-shadow:2px 2px 3px #000;
+	-webkit-box-shadow:2px 2px 3px #000;
+	filter: progid:DXImageTransform.Microsoft.Shadow(color='#000000', Direction=135, Strength=3);
+}
+
+
+.centerImageNav {
+	text-align:center;
+	margin-top:25px;
+}
+
+.centerImageNavText {
+	z-index:10px;
+	position:absolute;
+	font-size:10px;
+	font-weight:bold;
+	margin-left:34px;
+	margin-top:2px;
+}
+.clearInputPadding {
+	clear:both;
+	padding-bottom:10px;
+}
+.clearErrorPadding {
+	clear:both;
+	padding-bottom:10px;
+}
+
+.error {
+	color: red;
+}
+
+.thumbPageNum {
+	font-size:12px;
+	text-align:center;
+}
+
+/* IE7 Conditional Formatting */

@@ -1,0 +1,1147 @@
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.1/jquery.min.js" type="text/javascript"></script>
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.15/jquery-ui.min.js"></script>
+<script type="text/javascript" src="http://ajax.aspnetcdn.com/ajax/jquery.validate/1.8.1/jquery.validate.min.js"></script>
+<script type="text/javascript" src="http://cloud.github.com/downloads/digitalBush/jquery.maskedinput/jquery.maskedinput-1.3.min.js"></script>
+<script type="text/javascript" src="jquery.awesomeForm.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function() {
+   
+
+    
+	if (document.createStyleSheet)
+	{
+    	document.createStyleSheet("awesomeForms.css");
+	}
+	else {
+		$('head').append('<link rel="stylesheet" type="text/css" href="awesomeForms.css" />');
+	};
+
+
+    
+
+    // Initialize the awesomeForm.
+    $('#awesomeForm').awesomeForm();
+
+
+    
+    // Hide the pages that users don't initially see.
+    $('#awesomeForm').awesomeForm('hidePage',2);	// Parent Info only shown if child
+    $('#awesomeForm').awesomeForm('hidePage',3);	// Spouse Info only shown if married
+    $('#awesomeForm').awesomeForm('hidePage',5);	// Employment Info only shown if employed
+    $('#awesomeForm').awesomeForm('hidePage',6);	// Parent Employment Info only shown if child
+    $('#awesomeForm').awesomeForm('hidePage',8);	// Accident Info only shown if accident
+
+    
+    
+    
+
+    // A very simple hide/show page function.  
+    // If the accident radio button is checked, show that form.  
+	// Otherwise, hide it.  (It has to be rehidden in case
+	// people switch the box to yes, and then back to no.)
+    $("input:radio[name=accident]").change(function(){
+        if ($("input:radio[name='accident']:checked").val() == 'Yes') {                         
+            $('#awesomeForm').awesomeForm('showPage',8);
+        }
+        else {
+            $('#awesomeForm').awesomeForm('hidePage',8);
+        };              
+    });
+
+
+    // Turn off the birthDate autocomplete attribute - this was causing errors.
+    // They also didn't like the calendar.  Did a mask instead.
+    $("#birthDate").attr('autocomplete','off');
+    $("#birthDate").mask('99/99/9999');
+    
+    
+
+    
+    
+    // Here is an example of some custom validation using the jQuery validation plugin
+	// from http://bassistance.de/jquery-plugins/jquery-plugin-validation/
+    // This calculates the birthday as soon as the user leaves focus
+    // and determines if the user is a minor or not.
+    $("#birthDate").focusout(function() {
+            
+			// This calculates if they are over 18 or not.
+			var dateText = $("#birthDate").val();
+            var currentDate = dateText.split("/");
+            var day = currentDate[1];
+            var month = currentDate[0];
+            var year = currentDate[2];
+            var age = 18;
+            
+			// My data is the birthday converted into a JavaScript object
+            var mydate = new Date();
+            mydate.setFullYear(year, month-1, day);
+            
+            var currdate = new Date();
+
+            // If this is not a valid birthday (i.e. the baby is born in
+            // the future.
+            if (mydate > currdate) {
+                $(this).val("");
+                jQuery.validator.messages.required = "Whoa!  You were born in the future?!?";
+                $("#awesomeForm").validate().element("#birthDate");
+                jQuery.validator.messages.required = "This field is required.";
+            }
+            else {          
+                // If they are a minor, add the two minor forms.
+                // If not, remove the forms again.  (They have to 
+                // be removed again, in case the user switches them
+                // on and off.
+                currdate.setFullYear(currdate.getFullYear() - age);
+                if ((currdate - mydate) < 0){
+                    $('#awesomeForm').awesomeForm('showPage',2);
+                    $('#awesomeForm').awesomeForm('showPage',6);
+                }
+                else {
+                    $('#awesomeForm').awesomeForm('hidePage',2);
+                    $('#awesomeForm').awesomeForm('hidePage',6);
+                }
+            }
+    });
+    
+    
+    // If the marital status "married is checked, add that form to the list.  
+    $("input:radio[name=maritalStatus]").change(function(){
+        if ($("input:radio[name='maritalStatus']:checked").val() == 'Married') {                            
+            $('#awesomeForm').awesomeForm('showPage',3);
+        }
+        else {
+            $('#awesomeForm').awesomeForm('hidePage',3);
+        };                  
+    });
+            
+            
+    // This shows how items on the form can still be easily manipulated 
+	// with normal jquery - in this case a text box becomes available
+	// if the user chooses the "other" option
+    $("#race").change(function() {
+        if ($(this).val() == "other") {
+            $("#raceTitle").show();
+            $('#otherRace').show();
+        }
+        else {
+            $("#raceTitle").hide();
+            $('#otherRace').hide();
+        }
+    });
+    
+    
+	// Another simple hide/show page function, based on     
+    // ff the employment is checked, show that page.  
+    $("input:radio[name=employed]").change(function(){
+        if ($("input:radio[name='employed']:checked").val() == 'No') {                          
+            $('#awesomeForm').awesomeForm('hidePage',5);
+        }
+        else {
+            $('#awesomeForm').awesomeForm('showPage',5);
+        };                  
+    });
+	
+    
+	// Another example of simple jQuery manipulation of the form.  
+    // If the emergency contact redio is yes, show
+	// all the input elements for that emergency contact.  
+    $("input:radio[name=emergencyContact]").change(function(){
+        if ($("input:radio[name='emergencyContact']:checked").val() == 'Yes') {                         
+            $('#emergencyFirstNameLabel').show();
+            $('#emergencyFirstName').show();
+            $('#emergencyLastNameLabel').show();
+            $('#emergencyLastName').show();
+            $('#relationshipToPatientLabel').show();
+            $('#relationshipToPatient').show();
+            $('#emergencyCityLabel').show();
+            $('#emergencyCity').show();
+            $('#emergencyStateLabel').show();
+            $('#emergencyState').show();
+            $('#emergencyHomePhoneLabel').show();
+            $('#emergencyHomePhone').show();
+            $('#emergencyWorkPhoneLabel').show();
+            $('#emergencyWorkPhone').show();
+            $('#emergencyOtherPhoneLabel').show();
+            $('#emergencyOtherPhone').show();
+        }
+        else {
+            $('#emergencyFirstNameLabel').hide();
+            $('#emergencyFirstName').hide();
+            $('#emergencyLastNameLabel').hide();
+            $('#emergencyLastName').hide();
+            $('#relationshipToPatientLabel').hide();
+            $('#relationshipToPatient').hide();
+            $('#emergencyCityLabel').hide();
+            $('#emergencyCity').hide();
+            $('#emergencyStateLabel').hide();
+            $('#emergencyState').hide();
+            $('#emergencyHomePhoneLabel').hide();
+            $('#emergencyHomePhone').hide();
+            $('#emergencyWorkPhoneLabel').hide();
+            $('#emergencyWorkPhone').hide();
+            $('#emergencyOtherPhoneLabel').hide();
+            $('#emergencyOtherPhone').hide();
+        };                  
+    });
+    
+
+
+                
+    // Create all the datepickers and masks used throughout the form        
+    $("input:text[name=socialSecurityNumber]").mask("999-99-9999");
+    $("input:text[name=suscriberSocialSecurityNumber]").mask("999-99-9999");
+	
+	// Another custom jQuery validator message
+    $("input:text[name=dateOfArrival]").datepicker({
+            // This has to be blurred for the validation to work.
+            onSelect: function(dateText, inst) { 
+                $(this).blur(); 
+                var currentDate = dateText.split("/");
+                var day = currentDate[1];
+                var month = currentDate[0];
+                var year = currentDate[2];
+                
+                var mydate = new Date();
+                mydate.setFullYear(year, month-1, day);
+                
+                var currdate = new Date();
+        
+                if (mydate < currdate) {
+                    $("#dateOfArrival").val("");
+                    jQuery.validator.messages.required = "Please pick a date later than today.";
+                    $("#awesomeForm").validate().element("#dateOfArrival");
+                    jQuery.validator.messages.required = "This field is required.";
+                }   
+    
+            }
+    });
+    $("input:text[name=motherPhone]").mask('(999)999-9999');
+    $("input:text[name=fatherPhone]").mask('(999)999-9999');
+    $("input:text[name=motherSocialSecurityNumber]").mask("999-99-9999");
+    $("input:text[name=fatherSocialSecurityNumber]").mask("999-99-9999");
+    $("input:text[name=employerTelephone]").mask('(999)999-9999');
+    $("input:text[name=emergencyHomePhone]").mask('(999)999-9999');
+    $("input:text[name=emergencyWorkPhone]").mask('(999)999-9999');
+    $("input:text[name=emergencyOtherPhone]").mask('(999)999-9999');
+    $("input:text[name=dateOfInjury]").datepicker();
+    $("input:text[name=spouseBirthdate]").datepicker();
+    $("input:text[name=fatherBirthdate]").datepicker();
+    $("input:text[name=motherBirthdate]").datepicker();
+    $("input:text[name=retirementDate]").datepicker();
+    $("input:text[name=motherEmployerTelephone]").mask('(999)999-9999');
+    $("input:text[name=fatherEmployerTelephone]").mask('(999)999-9999');
+    $("input:text[name=insurancePhone]").mask('(999)999-9999');
+    $("input:text[name=employerPhoneOfInjured]").mask('(999)999-9999');
+    $("input:text[name=adjusterPhone]").mask('(999)999-9999');
+    $("#suscriberEmployerTelephone").mask('(999)999-9999');
+    $("input:text[name=personalTelephone]").mask('(999)999-9999');
+    $("#spouseEmployerTelephone").mask('(999)999-9999');
+    $("#sousePhone").mask('(999)999-9999');
+
+
+        
+   
+    //  This is where the form finally submits, to a file called confirm.php
+	//  Before submitting, the form is validated.  If it doesn't validate - then
+	//  it goes the page with validation errors.
+    $('#awesomeForm').submit(function() {
+		// Validate the form
+        isReadyToSubmit = $('#awesomeForm').awesomeForm('validateForm');
+		// If it validates then seralize all the inputs and post them
+		// to the server side processing page.
+        if (isReadyToSubmit === true) {
+            var urlstring = $(this).serialize();
+            $.post('/confirm.php', urlstring, function(data) {
+                $('#main-content').html(data);
+            });
+        } else {
+			// Otherwise - go the page that has the error,
+			// which was returned from the validation method above.
+            $('#awesomeForm').awesomeForm('goToPage',isReadyToSubmit);
+        };
+        return false;       
+    });
+    
+
+});
+
+
+
+</script>
+<style type="text/css">
+    .pageThumbnail {
+        background-color:#EDF0F4;
+        border: 3px solid transparent;
+    }
+    #awesomeForm legend {
+        padding-bottom:10px;
+    }
+
+</style>
+   <h1>Test Questionaire </h1>
+        
+        <div class="questionaireContainer">
+            
+            <form id="awesomeForm" style="clear:both;">
+           
+        
+
+
+                    <fieldset>
+                        <legend>Personal Information</legend>
+                        <label for="dateOfArrival">Future Meeting Date</label>
+                        <input type="text" id="dateOfArrival" name="dateOfArrival" class="required" />
+
+
+                        <label for="servicesBefore">Have you ever been here before?</label>
+                        <div>
+                        <input type="radio" name="servicesBefore" value="Yes" />Yes
+                        <input type="radio" name="servicesBefore" value="No" />No
+                        </div>
+                        
+                        <label for="accident">Have you recently been involved in an accident/injury?</label>
+                        <div>
+                        <input class="required" type="radio" name="accident" value="Yes" />Yes
+                        <input type="radio" name="accident" value="No" />No
+                        </div>
+
+                    </fieldset>
+
+                    <fieldset>
+                        <legend>Personal Information</legend>
+                            <label for="legalFirstName">Legal first name</label>
+                            <input type="text" name="legalFirstName" class="required" />
+                            <label for="legalMiddleName">Legal middle name</label>
+                            <input type="text" name="legalMiddleName" />
+                            <label for="legalLastName">Legal last name</label>
+                            <input type="text" name="legalLastName" class="required" />
+                            <label for="maritalStatus">Marital Status</label>
+                            <div>
+                                <input class="required" type="radio" value="Single" name="maritalStatus" />Single<br />
+                                <input type="radio" value="Married" name="maritalStatus" />Married<br />
+                                <input type="radio" value="Widowed" name="maritalStatus" />Widowed<br />
+                                <input type="radio" value="Divorced" name="maritalStatus" />Divorced<br />
+                                <input type="radio" value="Seperated" name="maritalStatus" />Separated<br />
+                            </div>
+                            <label for="birthDate">Birthday</label>
+                            <input class="required" type="text" id="birthDate" name="birthDate" />
+                            <label for="gender">Gender</label>
+                            <div>
+                                <input class="required" type="radio" name="gender" value="Female" />Female
+                                <input type="radio" name="gender" value="Male" />Male
+                            </div>
+                            <label for="socialSecurityNumber">Social security number:</label>
+                            <input type="text" id="socialSecurityNumber" name="socialSecurityNumber" />
+                            <label for="race">Race:</label>
+                            <select id="race" name="race">
+                                <option selected="selected">Please select one...</option>
+                                <option value='african'>African American</option>
+                                <option value='native'>Native American</option>
+                                <option value='asian'>Asian</option>
+                                <option value='hispanic'>Hispanic</option>
+                                <option value='white'>Caucasian</option>
+                                <option value='other'>Other</option>
+                                <option value='unknown'>Unknown</option>
+                                <option value='na'>Prefer Not to Answer</option>
+                            </select>
+                            <label for="otherRace" id="raceTitle" style="display:none;">Other:</label>
+                            <input type="text" name="otherRace" id="otherRace" style="display:none;" />
+                            <label for="ethnicity" generated="true">Ethnicity</label>
+                            <div>
+                                <input type="radio" name="ethnicity" value="Hispanic" />Hispanic or Latino<br />
+                                <input type="radio" name="ethnicity" value="NotHispanic" />Not Hispanic or Latino
+                            </div>
+                            <label for="languagePreference">Language preference:</label>
+                            <select name="languagePreference">
+                                <option selected="selected">Please select one...</option>
+                                <option value="english">English</option>
+                                <option value="spanish">Spanish</option>
+                                <option value="russian">Russian</option>
+                                <option value="other">Other</option>
+                            </select>
+                            <label for="religionPreference">Religious preference:</label>
+                            <select name="religionPreference">
+                                <option selected="selected">Please select one...</option>
+                                <option value="Assembly of God">Assembly of God</option>
+                                <option value="Baptist">Baptist</option>
+                                <option value="Brethren in Christ">Brethren in Christ</option>
+                                <option value="Catholic">Catholic</option>
+                                <option value="Christian Misc Alliance">Christian Misc Alliance</option>
+                                <option value="Congregate United Christian">Congregate United Christian</option>
+                                <option value="Church of Christ">Church of Christ</option>
+                                <option value="Church of God">Church of God</option>
+                                <option value="Covenant">Covenant</option>
+                                <option value="Christian">Christian</option>
+                                <option value="Christian Reformed">Christian Reformed</option>
+                                <option value="Christian Science">Christian Science</option>
+                                <option value="Episcopal">Episcopal</option>
+                                <option value="Evangelical">Evangelical</option>
+                                <option value="Full Gospel">Full Gospel</option>
+                                <option value="Foursquare">Foursquare</option>
+                                <option value="Free Methodist">Free Methodist</option>
+                                <option value="Friends">Friends</option>
+                                <option value="Independent">Independent</option>
+                                <option value="Jehovah Witness">Jehovah Witness</option>
+                                <option value="Jewish">Jewish</option>
+                                <option value="Latter Day Saints">Latter Day Saints</option>
+                                <option value="Lutheran">Lutheran</option>
+                                <option value="Mennonite">Mennonite</option>
+                                <option value="Nazarene">Nazarene</option>
+                                <option value="No Preference">No Preference</option>
+                                <option value="Open Bible">Open Bible</option>
+                                <option value="Other">Other</option>
+                                <option value="Pentecostal">Pentecostal</option>
+                                <option value="Presbyterian">Presbyterian</option>
+                                <option value="Protestant">Protestant</option>
+                                <option value="Reorganized LDS">Reorganized LDS</option>
+                                <option value="Religious Science">Religious Science</option>
+                                <option value="Russian Old Believer">Russian Old Believer</option>
+                                <option value="Russian Orthodox">Russian Orthodox</option>
+                                <option value="Seventh Day Adventist">Seventh Day Adventist</option>
+                                <option value="Salvation Army">Salvation Army</option>
+                                <option value="United Methodist">United Methodist</option>
+                                <option value="Unitarian">Unitarian</option>
+                                <option value="Wesleyan">Wesleyan</option>
+                                <option value="NoAnswer">Prefer not to answer</option>
+                            </select>
+                            <label for="church">Parish or church:</label>
+                            <input type="text" name="church" />
+                            <label for="otherName">Any other name or maiden name under which the patient has been admitted at this hospital:</label>
+                            <input type="text" name="otherName" />
+                    </fieldset>
+
+                    <fieldset>
+                        <legend>Parents information</legend>
+                            <label for="motherFirstName">Mother's first name</label>
+                            <input type="text" name="patientMotherFirstName" />
+                            <label for="motherLastName">Mother's last name</label>
+                            <input type="text" name="patientMotherLastName" />
+                            <label for="motherBirthdate">Mother's birthdate</label>
+                            <input type="text" name="patientMotherBirthdate" />
+                            <label for="motherAddress">Mother's address</label>
+                            <input type="text" name="patientMotherAddress" />
+                            <label for="motherCity">Mther's city</label>
+                            <input type="text" name="patientMotherCity" />
+                            <label for="motherState">Mother's state</label>
+                            <select name="motherState">
+                                <option selected="selected">Please select one...</option>
+                                <option value='AL'>Alabama</option>
+                                <option value='AK'>Alaska</option>
+                                <option value='AS'>American Samoa</option>
+                                <option value='AZ'>Arizona</option>
+                                <option value='AR'>Arkansas</option>
+                                <option value='CA'>California</option>
+                                <option value='CO'>Colorado</option>
+                                <option value='CT'>Connecticut</option>
+                                <option value='DE'>Delaware</option>
+                                <option value='DC'>District of columbia</option>
+                                <option value='FM'>Federated States of Micronesia</option>
+                                <option value='FL'>Florida</option>
+                                <option value='GA'>Georgia</option>
+                                <option value='GU'>Guam</option>
+                                <option value='HI'>Hawaii</option>
+                                <option value='ID'>Idaho</option>
+                                <option value='IL'>Illinois</option>
+                                <option value='IN'>Indiana</option>
+                                <option value='IA'>Iowa</option>
+                                <option value='KS'>Kansas</option>
+                                <option value='KY'>Kentucky</option>
+                                <option value='LA'>Louisiana</option>
+                                <option value='ME'>Maine</option>
+                                <option value='MH'>Marshall Islands</option>
+                                <option value='MD'>Maryland</option>
+                                <option value='MA'>Massachusetts</option>
+                                <option value='MI'>Michigan</option>
+                                <option value='MN'>Minnesota</option>
+                                <option value='MS'>Mississippi</option>
+                                <option value='MO'>Missouri</option>
+                                <option value='MT'>Montana</option>
+                                <option value='NE'>Nebraska</option>
+                                <option value='NV'>Nevada</option>
+                                <option value='NH'>New Hampshire</option>
+                                <option value='NJ'>New Jersey</option>
+                                <option value='NM'>New Mexico</option>
+                                <option value='NY'>New York</option>
+                                <option value='NC'>North Carolina</option>
+                                <option value='ND'>North Dakota</option>
+                                <option value='MP'>Northern Mariana Islands</option>
+                                <option value='OH'>Ohio</option>
+                                <option value='OK'>Oklahoma</option>
+                                <option value='OR'>Oregon</option>
+                                <option value='PW'>Palau</option>
+                                <option value='PA'>Pennsylvania</option>
+                                <option value='PR'>Puerto Rico</option>
+                                <option value='RI'>Rhode Island</option>
+                                <option value='SC'>South Carolina</option>
+                                <option value='SD'>South Dakota</option>
+                                <option value='TN'>Tennessee</option>
+                                <option value='TX'>Texas</option>
+                                <option value='UT'>Utah</option>
+                                <option value='VT'>Vermont</option>
+                                <option value='VI'>Virgin Islands</option>
+                                <option value='VA'>Virginia</option>
+                                <option value='WA'>Washington</option>
+                                <option value='WV'>West Virginia</option>
+                                <option value='WI'>Wisconsin</option>
+                                <option value='WY'>Wyoming</option>
+                            </select>
+                            <label for="motherZipCode">Mother's zip code</label>
+                            <input type="text" name="patientMotherZipCode" />
+                            <label for="motherPhone">Mother's Phone</label>
+                            <input type="text" name="patientMotherPhone" id="motherPhone" />
+                            <label for="motherSocialSecurityNumber">Mother's Social security number:</label>
+                            <input type="text" id="motherSocialSecurityNumber" name="motherSocialSecurityNumber" />
+                            <label for="fatherFirstName">Father's first name</label>
+                            <input type="text" name="patientFatherFirstName" />
+                            <label for="fatherLastName">Father's last name</label>
+                            <input type="text" name="patientFatherLastName" />
+                            <label for="fatherBirthdate">Father's birthdate</label>
+                            <input type="text" name="fatherBirthdate" />
+                            <label for="fatherAddress">Father's address</label>
+                            <input type="text" name="fatherAddress" />
+                            <label for="fatherCity">Father's city</label>
+                            <input type="text" name="patientFatherCity" />
+                            <label for="fatherState">Father's state</label>
+                            <select name="fatherState">
+                                <option selected="selected">Please select one...</option>
+                                <option value='AL'>Alabama</option>
+                                <option value='AK'>Alaska</option>
+                                <option value='AS'>American Samoa</option>
+                                <option value='AZ'>Arizona</option>
+                                <option value='AR'>Arkansas</option>
+                                <option value='CA'>California</option>
+                                <option value='CO'>Colorado</option>
+                                <option value='CT'>Connecticut</option>
+                                <option value='DE'>Delaware</option>
+                                <option value='DC'>District of columbia</option>
+                                <option value='FM'>Federated States of Micronesia</option>
+                                <option value='FL'>Florida</option>
+                                <option value='GA'>Georgia</option>
+                                <option value='GU'>Guam</option>
+                                <option value='HI'>Hawaii</option>
+                                <option value='ID'>Idaho</option>
+                                <option value='IL'>Illinois</option>
+                                <option value='IN'>Indiana</option>
+                                <option value='IA'>Iowa</option>
+                                <option value='KS'>Kansas</option>
+                                <option value='KY'>Kentucky</option>
+                                <option value='LA'>Louisiana</option>
+                                <option value='ME'>Maine</option>
+                                <option value='MH'>Marshall Islands</option>
+                                <option value='MD'>Maryland</option>
+                                <option value='MA'>Massachusetts</option>
+                                <option value='MI'>Michigan</option>
+                                <option value='MN'>Minnesota</option>
+                                <option value='MS'>Mississippi</option>
+                                <option value='MO'>Missouri</option>
+                                <option value='MT'>Montana</option>
+                                <option value='NE'>Nebraska</option>
+                                <option value='NV'>Nevada</option>
+                                <option value='NH'>New Hampshire</option>
+                                <option value='NJ'>New Jersey</option>
+                                <option value='NM'>New Mexico</option>
+                                <option value='NY'>New York</option>
+                                <option value='NC'>North Carolina</option>
+                                <option value='ND'>North Dakota</option>
+                                <option value='MP'>Northern Mariana Islands</option>
+                                <option value='OH'>Ohio</option>
+                                <option value='OK'>Oklahoma</option>
+                                <option value='OR'>Oregon</option>
+                                <option value='PW'>Palau</option>
+                                <option value='PA'>Pennsylvania</option>
+                                <option value='PR'>Puerto Rico</option>
+                                <option value='RI'>Rhode Island</option>
+                                <option value='SC'>South Carolina</option>
+                                <option value='SD'>South Dakota</option>
+                                <option value='TN'>Tennessee</option>
+                                <option value='TX'>Texas</option>
+                                <option value='UT'>Utah</option>
+                                <option value='VT'>Vermont</option>
+                                <option value='VI'>Virgin Islands</option>
+                                <option value='VA'>Virginia</option>
+                                <option value='WA'>Washington</option>
+                                <option value='WV'>West Virginia</option>
+                                <option value='WI'>Wisconsin</option>
+                                <option value='WY'>Wyoming</option>
+                            </select>
+                            <label for="fatherZipCode">Father's zip code</label>
+                            <input type="text" name="fatherZipCode" />
+                            <label for="fatherPhone">Father's Phone</label>
+                            <input type="text" name="fatherPhone" id="fatherPhone" />
+                            <label for="fatherSocialSecurityNumber">Father's Social security number:</label>
+                            <input type="text" id="fatherSocialSecurityNumber" name="fatherSocialSecurityNumber" />
+                    </fieldset>
+
+                    <fieldset>
+                        <legend>Spouse Information</legend>
+                            <label for="spouseFirstName">Spouse's first name</label>
+                            <input type="text" name="spouseFirstName" />
+                            <label for="spouseLastName">Spouse's last name</label>
+                            <input type="text" name="spouseLastName" />
+                            <label for="spouseBirthdate">Spouse's birthdate</label>
+                            <input type="text" name="spouseBirthdate" />
+                            <label for="spousePhone">Spouse's Phone</label>
+                            <input type="text" name="spousePhone" id="patientSpousePhone" />
+                            <label for="spouseEmployer">Spouse's employer</label>
+                            <input type="text" name="spouseEmployer" />
+                            <label for="spouseOccupation">Spouse's occupation</label>
+                            <input type="text" name="spouseOccupation" />
+                            <label for="spouseEmployerTelephone">Spouse's employer's telephone</label>
+                            <input type="text" id="spouseEmployerTelephone" />
+                            <label for="spouseEmployerCity">Spouse's employer's city</label>
+                            <input type="text" name="spouseEmployerCity" />
+                            <label for="spouseEmployerState">Spouse's employer's state</label>
+                            <select name="spouseEmployerState">
+                                <option selected="selected">Please select one...</option>
+                                <option value='AL'>Alabama</option>
+                                <option value='AK'>Alaska</option>
+                                <option value='AS'>American Samoa</option>
+                                <option value='AZ'>Arizona</option>
+                                <option value='AR'>Arkansas</option>
+                                <option value='CA'>California</option>
+                                <option value='CO'>Colorado</option>
+                                <option value='CT'>Connecticut</option>
+                                <option value='DE'>Delaware</option>
+                                <option value='DC'>District of columbia</option>
+                                <option value='FM'>Federated States of Micronesia</option>
+                                <option value='FL'>Florida</option>
+                                <option value='GA'>Georgia</option>
+                                <option value='GU'>Guam</option>
+                                <option value='HI'>Hawaii</option>
+                                <option value='ID'>Idaho</option>
+                                <option value='IL'>Illinois</option>
+                                <option value='IN'>Indiana</option>
+                                <option value='IA'>Iowa</option>
+                                <option value='KS'>Kansas</option>
+                                <option value='KY'>Kentucky</option>
+                                <option value='LA'>Louisiana</option>
+                                <option value='ME'>Maine</option>
+                                <option value='MH'>Marshall Islands</option>
+                                <option value='MD'>Maryland</option>
+                                <option value='MA'>Massachusetts</option>
+                                <option value='MI'>Michigan</option>
+                                <option value='MN'>Minnesota</option>
+                                <option value='MS'>Mississippi</option>
+                                <option value='MO'>Missouri</option>
+                                <option value='MT'>Montana</option>
+                                <option value='NE'>Nebraska</option>
+                                <option value='NV'>Nevada</option>
+                                <option value='NH'>New Hampshire</option>
+                                <option value='NJ'>New Jersey</option>
+                                <option value='NM'>New Mexico</option>
+                                <option value='NY'>New York</option>
+                                <option value='NC'>North Carolina</option>
+                                <option value='ND'>North Dakota</option>
+                                <option value='MP'>Northern Mariana Islands</option>
+                                <option value='OH'>Ohio</option>
+                                <option value='OK'>Oklahoma</option>
+                                <option value='OR'>Oregon</option>
+                                <option value='PW'>Palau</option>
+                                <option value='PA'>Pennsylvania</option>
+                                <option value='PR'>Puerto Rico</option>
+                                <option value='RI'>Rhode Island</option>
+                                <option value='SC'>South Carolina</option>
+                                <option value='SD'>South Dakota</option>
+                                <option value='TN'>Tennessee</option>
+                                <option value='TX'>Texas</option>
+                                <option value='UT'>Utah</option>
+                                <option value='VT'>Vermont</option>
+                                <option value='VI'>Virgin Islands</option>
+                                <option value='VA'>Virginia</option>
+                                <option value='WA'>Washington</option>
+                                <option value='WV'>West Virginia</option>
+                                <option value='WI'>Wisconsin</option>
+                                <option value='WY'>Wyoming</option>
+                            </select>
+                    </fieldset>
+
+                    <fieldset>
+                        <legend>Personal Information</legend>
+                            <label for="personalTelephone">Telephone</label>
+                            <input type="text" name="personalTelephone" />
+                            <label for="personalEmail">E-mail address</label>
+                            <input type="text" class="email" name="personalEmail" />
+                            <label for="personalMailingAddress">Mailing address</label>
+                            <input type="text" name="personalMailingAddress" />
+                            <label for="personalMailingCity">Mailing city</label>
+                            <input type="text" name="personalMailingCity" />
+                            <label for="personalMailingState">Mailing state</label>
+                            <select name="personalMailingState">
+                                <option selected="selected">Please select one...</option>
+                                <option value='AL'>Alabama</option>
+                                <option value='AK'>Alaska</option>
+                                <option value='AS'>American Samoa</option>
+                                <option value='AZ'>Arizona</option>
+                                <option value='AR'>Arkansas</option>
+                                <option value='CA'>California</option>
+                                <option value='CO'>Colorado</option>
+                                <option value='CT'>Connecticut</option>
+                                <option value='DE'>Delaware</option>
+                                <option value='DC'>District of columbia</option>
+                                <option value='FM'>Federated States of Micronesia</option>
+                                <option value='FL'>Florida</option>
+                                <option value='GA'>Georgia</option>
+                                <option value='GU'>Guam</option>
+                                <option value='HI'>Hawaii</option>
+                                <option value='ID'>Idaho</option>
+                                <option value='IL'>Illinois</option>
+                                <option value='IN'>Indiana</option>
+                                <option value='IA'>Iowa</option>
+                                <option value='KS'>Kansas</option>
+                                <option value='KY'>Kentucky</option>
+                                <option value='LA'>Louisiana</option>
+                                <option value='ME'>Maine</option>
+                                <option value='MH'>Marshall Islands</option>
+                                <option value='MD'>Maryland</option>
+                                <option value='MA'>Massachusetts</option>
+                                <option value='MI'>Michigan</option>
+                                <option value='MN'>Minnesota</option>
+                                <option value='MS'>Mississippi</option>
+                                <option value='MO'>Missouri</option>
+                                <option value='MT'>Montana</option>
+                                <option value='NE'>Nebraska</option>
+                                <option value='NV'>Nevada</option>
+                                <option value='NH'>New Hampshire</option>
+                                <option value='NJ'>New Jersey</option>
+                                <option value='NM'>New Mexico</option>
+                                <option value='NY'>New York</option>
+                                <option value='NC'>North Carolina</option>
+                                <option value='ND'>North Dakota</option>
+                                <option value='MP'>Northern Mariana Islands</option>
+                                <option value='OH'>Ohio</option>
+                                <option value='OK'>Oklahoma</option>
+                                <option value='OR'>Oregon</option>
+                                <option value='PW'>Palau</option>
+                                <option value='PA'>Pennsylvania</option>
+                                <option value='PR'>Puerto Rico</option>
+                                <option value='RI'>Rhode Island</option>
+                                <option value='SC'>South Carolina</option>
+                                <option value='SD'>South Dakota</option>
+                                <option value='TN'>Tennessee</option>
+                                <option value='TX'>Texas</option>
+                                <option value='UT'>Utah</option>
+                                <option value='VT'>Vermont</option>
+                                <option value='VI'>Virgin Islands</option>
+                                <option value='VA'>Virginia</option>
+                                <option value='WA'>Washington</option>
+                                <option value='WV'>West Virginia</option>
+                                <option value='WI'>Wisconsin</option>
+                                <option value='WY'>Wyoming</option>
+                            </select>
+                            <label for="personalMailingZip">Mailing zip code</label>
+                            <input type="text" name="personalMailingZip"  />
+                            <label for="employed">Are you currently employed?</label>
+                            <div>
+                                <input class="required" type="radio" name="employed" value="FT" />Full Time<br />
+                                <input type="radio" name="employed" value="PT" />Part Time<br />
+                                <input type="radio" name="employed" value="No" />No
+                            </div>
+                    </fieldset>
+
+                    <fieldset>
+                        <legend>Employment Information</legend>
+                            <label for="personalEmployer">Employer</label>
+                            <input type="text" name="personalEmployer" />
+                            <label for="personalOccupation">Occupation</label>
+                            <input type="text" name="personalOccupation" />
+                            <label for="personalEmployerTelephone">Telephone</label>
+                            <input type="text" name="personalEmployerTelephone" />
+                            <label for="personalEmployerAddress">Address</label>
+                            <input type="text" name="personalEmployerAddress" />
+                            <label for="personalEmployerCity">City</label>
+                            <input type="text" name="personalEmployerCity" />
+                            <label for="personalEmployerState">State</label>
+                            <select name="personalEmployerState">
+                                <option selected="selected">Please select one...</option>
+                                <option value='AL'>Alabama</option>
+                                <option value='AK'>Alaska</option>
+                                <option value='AS'>American Samoa</option>
+                                <option value='AZ'>Arizona</option>
+                                <option value='AR'>Arkansas</option>
+                                <option value='CA'>California</option>
+                                <option value='CO'>Colorado</option>
+                                <option value='CT'>Connecticut</option>
+                                <option value='DE'>Delaware</option>
+                                <option value='DC'>District of columbia</option>
+                                <option value='FM'>Federated States of Micronesia</option>
+                                <option value='FL'>Florida</option>
+                                <option value='GA'>Georgia</option>
+                                <option value='GU'>Guam</option>
+                                <option value='HI'>Hawaii</option>
+                                <option value='ID'>Idaho</option>
+                                <option value='IL'>Illinois</option>
+                                <option value='IN'>Indiana</option>
+                                <option value='IA'>Iowa</option>
+                                <option value='KS'>Kansas</option>
+                                <option value='KY'>Kentucky</option>
+                                <option value='LA'>Louisiana</option>
+                                <option value='ME'>Maine</option>
+                                <option value='MH'>Marshall Islands</option>
+                                <option value='MD'>Maryland</option>
+                                <option value='MA'>Massachusetts</option>
+                                <option value='MI'>Michigan</option>
+                                <option value='MN'>Minnesota</option>
+                                <option value='MS'>Mississippi</option>
+                                <option value='MO'>Missouri</option>
+                                <option value='MT'>Montana</option>
+                                <option value='NE'>Nebraska</option>
+                                <option value='NV'>Nevada</option>
+                                <option value='NH'>New Hampshire</option>
+                                <option value='NJ'>New Jersey</option>
+                                <option value='NM'>New Mexico</option>
+                                <option value='NY'>New York</option>
+                                <option value='NC'>North Carolina</option>
+                                <option value='ND'>North Dakota</option>
+                                <option value='MP'>Northern Mariana Islands</option>
+                                <option value='OH'>Ohio</option>
+                                <option value='OK'>Oklahoma</option>
+                                <option value='OR'>Oregon</option>
+                                <option value='PW'>Palau</option>
+                                <option value='PA'>Pennsylvania</option>
+                                <option value='PR'>Puerto Rico</option>
+                                <option value='RI'>Rhode Island</option>
+                                <option value='SC'>South Carolina</option>
+                                <option value='SD'>South Dakota</option>
+                                <option value='TN'>Tennessee</option>
+                                <option value='TX'>Texas</option>
+                                <option value='UT'>Utah</option>
+                                <option value='VT'>Vermont</option>
+                                <option value='VI'>Virgin Islands</option>
+                                <option value='VA'>Virginia</option>
+                                <option value='WA'>Washington</option>
+                                <option value='WV'>West Virginia</option>
+                                <option value='WI'>Wisconsin</option>
+                                <option value='WY'>Wyoming</option>
+                            </select>
+
+
+                    </fieldset>
+
+                    <fieldset>
+                        <legend>Mother's Employment Information</legend>
+                        <label for="motherEmployer">Mother's employer</label>
+                        <input type="text" name="motherEmployer" />
+                        <label for="motherOccupation">Mother's occupation</label>
+                        <input type="text" name="motherOccupation" />
+                        <label for="motherEmployerTelephone">Mother's employer's telephone</label>
+                        <input type="text" id="motherEmployerTelephone" name="motherEmployerTelephone" />
+                        <label for="motherEmployerCity">Mother's employer's city</label>
+                        <input type="text" name="motherEmployerCity" />
+                        <label for="motherEmployerState">Mother's employer's state</label>
+                            <select name="motherEmployerState">
+                                <option selected="selected">Please select one...</option>
+                                <option value='AL'>Alabama</option>
+                                <option value='AK'>Alaska</option>
+                                <option value='AS'>American Samoa</option>
+                                <option value='AZ'>Arizona</option>
+                                <option value='AR'>Arkansas</option>
+                                <option value='CA'>California</option>
+                                <option value='CO'>Colorado</option>
+                                <option value='CT'>Connecticut</option>
+                                <option value='DE'>Delaware</option>
+                                <option value='DC'>District of columbia</option>
+                                <option value='FM'>Federated States of Micronesia</option>
+                                <option value='FL'>Florida</option>
+                                <option value='GA'>Georgia</option>
+                                <option value='GU'>Guam</option>
+                                <option value='HI'>Hawaii</option>
+                                <option value='ID'>Idaho</option>
+                                <option value='IL'>Illinois</option>
+                                <option value='IN'>Indiana</option>
+                                <option value='IA'>Iowa</option>
+                                <option value='KS'>Kansas</option>
+                                <option value='KY'>Kentucky</option>
+                                <option value='LA'>Louisiana</option>
+                                <option value='ME'>Maine</option>
+                                <option value='MH'>Marshall Islands</option>
+                                <option value='MD'>Maryland</option>
+                                <option value='MA'>Massachusetts</option>
+                                <option value='MI'>Michigan</option>
+                                <option value='MN'>Minnesota</option>
+                                <option value='MS'>Mississippi</option>
+                                <option value='MO'>Missouri</option>
+                                <option value='MT'>Montana</option>
+                                <option value='NE'>Nebraska</option>
+                                <option value='NV'>Nevada</option>
+                                <option value='NH'>New Hampshire</option>
+                                <option value='NJ'>New Jersey</option>
+                                <option value='NM'>New Mexico</option>
+                                <option value='NY'>New York</option>
+                                <option value='NC'>North Carolina</option>
+                                <option value='ND'>North Dakota</option>
+                                <option value='MP'>Northern Mariana Islands</option>
+                                <option value='OH'>Ohio</option>
+                                <option value='OK'>Oklahoma</option>
+                                <option value='OR'>Oregon</option>
+                                <option value='PW'>Palau</option>
+                                <option value='PA'>Pennsylvania</option>
+                                <option value='PR'>Puerto Rico</option>
+                                <option value='RI'>Rhode Island</option>
+                                <option value='SC'>South Carolina</option>
+                                <option value='SD'>South Dakota</option>
+                                <option value='TN'>Tennessee</option>
+                                <option value='TX'>Texas</option>
+                                <option value='UT'>Utah</option>
+                                <option value='VT'>Vermont</option>
+                                <option value='VI'>Virgin Islands</option>
+                                <option value='VA'>Virginia</option>
+                                <option value='WA'>Washington</option>
+                                <option value='WV'>West Virginia</option>
+                                <option value='WI'>Wisconsin</option>
+                                <option value='WY'>Wyoming</option>
+                            </select>
+                        <legend>Father's employment information</legend>
+                        <label for="fatherEmployer">Father's Employer</label>
+                        <input type="text" name="fatherEmployer" />
+                        <label for="fatherOccupation">Father's occupation</label>
+                        <input type="text" name="fatherOccupation" />
+                        <label for="fatherEmployerTelephone">Father's employer's telephone</label>
+                        <input type="text" id="fatherEmployerTelephone" name="fatherEmployerTelephone" />
+                        <label for="fatherEmployerCity">Father's employer's city</label>
+                        <input type="text" name="fatherEmployerCity" />
+                        <label for="fatherEmployerState">Father's employer's state</label>
+                        <select name="fatherEmployerState">
+                            <option selected="selected">Please select one...</option>
+                            <option value='AL'>Alabama</option>
+                            <option value='AK'>Alaska</option>
+                            <option value='AS'>American Samoa</option>
+                            <option value='AZ'>Arizona</option>
+                            <option value='AR'>Arkansas</option>
+                            <option value='CA'>California</option>
+                            <option value='CO'>Colorado</option>
+                            <option value='CT'>Connecticut</option>
+                            <option value='DE'>Delaware</option>
+                            <option value='DC'>District of columbia</option>
+                            <option value='FM'>Federated States of Micronesia</option>
+                            <option value='FL'>Florida</option>
+                            <option value='GA'>Georgia</option>
+                            <option value='GU'>Guam</option>
+                            <option value='HI'>Hawaii</option>
+                            <option value='ID'>Idaho</option>
+                            <option value='IL'>Illinois</option>
+                            <option value='IN'>Indiana</option>
+                            <option value='IA'>Iowa</option>
+                            <option value='KS'>Kansas</option>
+                            <option value='KY'>Kentucky</option>
+                            <option value='LA'>Louisiana</option>
+                            <option value='ME'>Maine</option>
+                            <option value='MH'>Marshall Islands</option>
+                            <option value='MD'>Maryland</option>
+                            <option value='MA'>Massachusetts</option>
+                            <option value='MI'>Michigan</option>
+                            <option value='MN'>Minnesota</option>
+                            <option value='MS'>Mississippi</option>
+                            <option value='MO'>Missouri</option>
+                            <option value='MT'>Montana</option>
+                            <option value='NE'>Nebraska</option>
+                            <option value='NV'>Nevada</option>
+                            <option value='NH'>New Hampshire</option>
+                            <option value='NJ'>New Jersey</option>
+                            <option value='NM'>New Mexico</option>
+                            <option value='NY'>New York</option>
+                            <option value='NC'>North Carolina</option>
+                            <option value='ND'>North Dakota</option>
+                            <option value='MP'>Northern Mariana Islands</option>
+                            <option value='OH'>Ohio</option>
+                            <option value='OK'>Oklahoma</option>
+                            <option value='OR'>Oregon</option>
+                            <option value='PW'>Palau</option>
+                            <option value='PA'>Pennsylvania</option>
+                            <option value='PR'>Puerto Rico</option>
+                            <option value='RI'>Rhode Island</option>
+                            <option value='SC'>South Carolina</option>
+                            <option value='SD'>South Dakota</option>
+                            <option value='TN'>Tennessee</option>
+                            <option value='TX'>Texas</option>
+                            <option value='UT'>Utah</option>
+                            <option value='VT'>Vermont</option>
+                            <option value='VI'>Virgin Islands</option>
+                            <option value='VA'>Virginia</option>
+                            <option value='WA'>Washington</option>
+                            <option value='WV'>West Virginia</option>
+                            <option value='WI'>Wisconsin</option>
+                            <option value='WY'>Wyoming</option>
+                        </select>
+                    </fieldset>
+
+
+                    <fieldset>
+                        <legend>Emergency Contact Information</legend>
+                            <label for="emergencyContact">Does the patient have an emergency contact who does not live with them?<br /></label>
+                            <div>
+                                <input type="radio" name="emergencyContact" value="Yes" />Yes
+                                <input type="radio" name="emergencyContact" value="No" />No
+                            </div>
+                            <label for="emergencyFirstName" id="emergencyFirstNameLabel" style="display:none;">First name</label>
+                            <input type="text" name="emergencyFirstName" id="emergencyFirstName" style="display:none;" />
+                            <label for="emergencyLastName" id="emergencyLastNameLabel" style="display:none;">Last name</label>
+                            <input type="text" name="emergencyLastName" id="emergencyLastName" style="display:none;" />
+                            <label for="relationshipToPerson" style="display:none;" id="relationshipToPersonLabel">Relationship to person</label>
+                            <select name="relationshipToPerson" style="display:none;" id="relationshipToPerson">
+                                <option selected="selected">Please select one...</option>
+                                <option value="self">Self</option>
+                                <option value="wife">Wife</option>
+                                <option value="husband">Husband</option>
+                                <option value="mother">Mother</option>
+                                <option value="father">Father</option>
+                                <option value="legalGaurdian">Legal Gaurdian</option>
+                                <option value="sister">Sister</option>
+                                <option value="brother">Brother</option>
+                                <option value="daughter">Daughter</option>
+                                <option value="son">Son</option>
+                                <option value="grandmother">Grandmother</option>
+                                <option value="grandfather">Grandfather</option>
+                                <option value="fosterMother">Foster Mother</option>
+                                <option value="fosterFather">Foster Father</option>
+                                <option value="stepmother">Stepmother</option>
+                                <option value="stepfather">Stepfather</option>
+                                <option value="aunt">Aunt</option>
+                                <option value="uncle">Uncle</option>
+                                <option value="niece">Niece</option>
+                                <option value="nephew">Nephew</option>
+                                <option value="cousin">Cousin</option>
+                                <option value="friend">Friend</option>
+                                <option value="grandchild">Grandchild</option>
+                                <option value="organDonor">Organ Donor</option>
+                                <option value="inLaw">In-Law</option>
+                                <option value="other">Other</option>
+                            </select>
+                            <label for="emergencyCity" id="emergencyCityLabel" style="display:none;">City</label>
+                            <input type="text" name="emergencyCity" id="emergencyCity" style="display:none;" />
+                            <label for="emergencyState" id="emergencyStateLabel" style="display:none;">State</label>
+                            <select name="emergencyState" id="emergencyState" style="display:none;">
+                                <option selected="selected">Please select one...</option>
+                                <option value='AL'>Alabama</option>
+                                <option value='AK'>Alaska</option>
+                                <option value='AS'>American Samoa</option>
+                                <option value='AZ'>Arizona</option>
+                                <option value='AR'>Arkansas</option>
+                                <option value='CA'>California</option>
+                                <option value='CO'>Colorado</option>
+                                <option value='CT'>Connecticut</option>
+                                <option value='DE'>Delaware</option>
+                                <option value='DC'>District of columbia</option>
+                                <option value='FM'>Federated States of Micronesia</option>
+                                <option value='FL'>Florida</option>
+                                <option value='GA'>Georgia</option>
+                                <option value='GU'>Guam</option>
+                                <option value='HI'>Hawaii</option>
+                                <option value='ID'>Idaho</option>
+                                <option value='IL'>Illinois</option>
+                                <option value='IN'>Indiana</option>
+                                <option value='IA'>Iowa</option>
+                                <option value='KS'>Kansas</option>
+                                <option value='KY'>Kentucky</option>
+                                <option value='LA'>Louisiana</option>
+                                <option value='ME'>Maine</option>
+                                <option value='MH'>Marshall Islands</option>
+                                <option value='MD'>Maryland</option>
+                                <option value='MA'>Massachusetts</option>
+                                <option value='MI'>Michigan</option>
+                                <option value='MN'>Minnesota</option>
+                                <option value='MS'>Mississippi</option>
+                                <option value='MO'>Missouri</option>
+                                <option value='MT'>Montana</option>
+                                <option value='NE'>Nebraska</option>
+                                <option value='NV'>Nevada</option>
+                                <option value='NH'>New Hampshire</option>
+                                <option value='NJ'>New Jersey</option>
+                                <option value='NM'>New Mexico</option>
+                                <option value='NY'>New York</option>
+                                <option value='NC'>North Carolina</option>
+                                <option value='ND'>North Dakota</option>
+                                <option value='MP'>Northern Mariana Islands</option>
+                                <option value='OH'>Ohio</option>
+                                <option value='OK'>Oklahoma</option>
+                                <option value='OR'>Oregon</option>
+                                <option value='PW'>Palau</option>
+                                <option value='PA'>Pennsylvania</option>
+                                <option value='PR'>Puerto Rico</option>
+                                <option value='RI'>Rhode Island</option>
+                                <option value='SC'>South Carolina</option>
+                                <option value='SD'>South Dakota</option>
+                                <option value='TN'>Tennessee</option>
+                                <option value='TX'>Texas</option>
+                                <option value='UT'>Utah</option>
+                                <option value='VT'>Vermont</option>
+                                <option value='VI'>Virgin Islands</option>
+                                <option value='VA'>Virginia</option>
+                                <option value='WA'>Washington</option>
+                                <option value='WV'>West Virginia</option>
+                                <option value='WI'>Wisconsin</option>
+                                <option value='WY'>Wyoming</option>
+                            </select>
+                            <label for="emergencyHomePhone" id="emergencyHomePhoneLabel" style="display:none;">Home phone</label>
+                            <input type="text" name="emergencyHomePhone" id="emergencyHomePhone" style="display:none;" />
+                            <label for="emergencyWorkPhone" id="emergencyWorkPhoneLabel" style="display:none;">Work phone</label>
+                            <input type="text" name="emergencyWorkPhone" id="emergencyWorkPhone" style="display:none;" />
+                            <label for="emergencyOtherPhone" id="emergencyOtherPhone" style="display:none;">Other Phone</label>
+                            <input type="text" id="emergencyOtherPhoneLabel" name="emergencyOtherPhone" style="display:none;" />
+                    </fieldset>
+
+
+
+
+                        <fieldset>
+                            <legend>Accident Information</legend>
+                                <label for="dateOfInjury">Date of accident/injury</label>
+                                <input type="text" id="dateOfInjury" name="dateOfInjury" />
+                                <label for="typeOfInjury">Type of injury</label>
+                                <select id="typeOfInjury" name="typeOfInjury">
+                                    <option selected="selected">Please select one...</option>
+                                    <option value='autoAccident'>Automobile Accident</option>
+                                    <option value='jobAccident'>Job Related Accident</option>
+                                    <option value='houseAccident'>Household Accident</option>
+                                    <option value='selfInflictedAccident'>Self-Inflicted Accident</option>
+                                    <option value='other'>Other</option>
+                                </select>
+                                <label for="customOtherInjury" id="customOtherInjury" style="display:none;">Please describe</label>
+                                <input type="text" name="customOtherInjury" id="otherCustomOtherInjury" style="display:none;" />
+
+        
+                                <label for="accidentDescription">Where did the accident happen?<br />
+                                Please describe the accident in detail, including the location and time. Also tell us if you were a pedestrian, driver, or passenger.<br />
+                                </label>
+                                <textarea name="accidentDescription"></textarea>
+                                <label for"insuranceCompanyName">Name of liable third party</label>
+                                <input type="text" name="insuranceCompanyName" />
+                                <label for"claimNumber">Claim number</label>
+                                <input type="text" name="claimNumber" />
+                                <label for="adjusterName">Adjuster's name</label>
+                                <input type="text" name="adjusterName" />
+                                <label for="adjusterPhone">Adjuster's telephone</label>
+                                <input type="text" id="adjusterPhone" name="adjusterPhone" />
+                                <label for="workInjury">Did the injury occur at work?</label>
+                                <div>
+                                    <input type="radio" value="Yes" name="workInjury" /> Yes
+                                    <input type="radio" value="No" name="workInjury" /> No                        
+                                </div>
+                                <label for="employerNameOfInjured">
+                                    If yes, enter the name of the employer at the time of injury:
+                                </label>
+                                <input type="text" name="employerNameOfInjured" />
+                                <label for="employerPhoneOfInjured">Employer telephone</label>
+                                <input type="text" id="employerPhoneOfInjured" name="employerPhoneOfInjured" />
+                        </fieldset>
+
+
+                    <fieldset>
+                        <legend>Privacy Policy</legend>
+                        <label for="receivedPrivacyPolicy">Has you received a copy of our Privacy Notice?</label>
+                        <div>
+                            <input type="radio" value="Yes" name="receivedPrivacyPolicy" />Yes
+                            <input type="radio" value="No" name="receivedPrivacyPolicy" />No
+                        </div>
+                        <label for="questionsOrComments">Does you have any questions or comments?</label>
+                        <textarea name="questionsOrComments"></textarea>
+                        <div style="text-align:center;">
+                            <input class="submit" type="submit" value="Submit" />
+                        </div>
+                    </fieldset>
+
+
+            </form>
+        </div>
+        
+   
